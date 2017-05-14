@@ -18,6 +18,7 @@ public class MainActivity extends Activity {
 
     WebDownloader webDownloader;
     MyImageRepository imageRepository;
+    MyMapFragment mapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +27,7 @@ public class MainActivity extends Activity {
 
         webDownloader = new WebDownloader();
         imageRepository = new MyImageRepository(this);
+        mapFragment = new MyMapFragment();
 
 
         TabHost host = (TabHost) findViewById(R.id.tabhost);
@@ -40,6 +42,9 @@ public class MainActivity extends Activity {
                 .add(R.id.tab3, new MyPreferenceFragment(), FragmentTags.SETTINGS)
                 .commit();
 
+        fragmentManager.beginTransaction()
+                .add(R.id.tab1, mapFragment, FragmentTags.MAP)
+                .commit();
 
         Button button = (Button) findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
