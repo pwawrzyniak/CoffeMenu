@@ -40,11 +40,10 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
-                    <TextView
-                        android:text="To jest zakładka nr 1"
+                    <com.google.android.gms.maps.MapView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/textView2" />
+                        android:id="@+id/mapView" />
                 </LinearLayout>
 
                 <LinearLayout

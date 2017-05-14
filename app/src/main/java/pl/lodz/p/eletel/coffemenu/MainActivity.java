@@ -31,14 +31,15 @@ public class MainActivity extends Activity {
         TabHost host = (TabHost) findViewById(R.id.tabhost);
         host.setup();
 
-        createTab("TAB 1", R.id.tab1, host);
-        createTab("TAB 2", R.id.tab2, host);
-        createTab("Settings", R.id.tab3, host);
+        createTab("Mapa", R.id.tab1, host);
+        createTab("Lista", R.id.tab2, host);
+        createTab("Ustawienia", R.id.tab3, host);
 
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
                 .add(R.id.tab3, new MyPreferenceFragment(), FragmentTags.SETTINGS)
                 .commit();
+
 
         Button button = (Button) findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
@@ -73,9 +74,6 @@ public class MainActivity extends Activity {
 //                                                       "http://static.panoramio.com/photos/original/36586641.jpg");
   //                          "http://kopernik.alpha.pl/upload/image/aaa.jpg");
                     Log.i("MAIN", "Image downloaded");
-
-
-
 
                     ImageView iv = (ImageView) findViewById(R.id.imageView);
                     iv.setImageBitmap(BitmapFactory.decodeByteArray(
