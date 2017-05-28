@@ -6,12 +6,19 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TabHost;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import pl.lodz.p.eletel.coffemenu.mapObjects.MyMapMarker;
+import pl.lodz.p.eletel.coffemenu.mapObjects.TramApiObject;
 
 public class MainActivity extends Activity {
 
@@ -20,6 +27,37 @@ public class MainActivity extends Activity {
     MyImageRepository imageRepository;
     MyMapFragment mapFragment;
     private DataStore dataStore;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        FragmentManager fragmentManager = getFragmentManager();
+        ((DataStore) fragmentManager.findFragmentByTag(FragmentTags.DATASTORE))
+                .registerObserver(new DataStore.DataStoreObserver() {
+                    @Override
+                    public void onNewDataAvailable(final List<TramApiObject> objects) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String[] listItems = new String[objects.size()];
+                                int i = 0;
+                                ListView listView = (ListView) findViewById(R.id.listView);
+                                ((ArrayAdapter<String>) listView.getAdapter()).clear();
+                                for (TramApiObject obj : objects) {
+//                                    listItems[i++] = MyMapMarker.getMarkerTittle(obj);
+                                    ((ArrayAdapter<String>) listView.getAdapter()).add(MyMapMarker.getMarkerTittle(obj));
+                                }
+
+
+
+//                                ((ArrayAdapter<String>) listView.getAdapter()).addAll(listItems);
+                            }
+                        });
+
+
+                    }
+                });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,58 +86,15 @@ public class MainActivity extends Activity {
                 .add(dataStore, FragmentTags.DATASTORE)
                 .commit();
 
-        
-
-        Button button = (Button) findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    Log.i("MAIN", "Button clicked");
-//                    webDownloader.beginFileDownload(
-//                            "http://kopernik.alpha.pl/upload/image/aaa.jpg",//"http://www.niedzica.pl/userfiles/image/majowka_w_gorach10.png",
-//                            new WebDownloader.OnDownloadedListener() {
-//                                @Override
-//                                public void onDownloadFinished(int status, final byte[] item, URL url) {
-//                                    runOnUiThread(new Runnable() {
-//                                        @Override
-//                                        public void run() {
-//                                            Log.i("MAIN", "Image downloaded");
-//                                            ImageView iv = (ImageView)findViewById(R.id.imageView);
-//                                            iv.setImageBitmap(BitmapFactory.decodeByteArray(
-//                                                    item,0,item.length
-//                                            ));
-//
-//                                        }
-//                                    });
-//                                }
-//                            }
-//                    );
+        List<String> listItems = new ArrayList<>();
+        ListView listView = (ListView) findViewById(R.id.listView);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                MainActivity.this,
+                android.R.layout.simple_list_item_1,
+                listItems);
+        listView.setAdapter(adapter);
 
 
-
-                    byte[] item = imageRepository.getImage(
-                            "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Radziejow_ratusz.jpg/1200px-Radziejow_ratusz.jpg");
-//                                                       "http://static.panoramio.com/photos/original/36586641.jpg");
-  //                          "http://kopernik.alpha.pl/upload/image/aaa.jpg");
-                    Log.i("MAIN", "Image downloaded");
-
-                    ImageView iv = (ImageView) findViewById(R.id.imageView);
-                    iv.setImageBitmap(BitmapFactory.decodeByteArray(
-                            item, 0, item.length
-                    ));
-
-
-                    ((DataStore)fragmentManager.findFragmentByTag(FragmentTags.DATASTORE)).start(500);
-
-                    boolean a = true;
-                    a = !a;
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
     }
 
     private void createTab(String text, int viewId, TabHost host) {

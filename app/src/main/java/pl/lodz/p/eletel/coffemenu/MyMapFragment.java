@@ -69,18 +69,14 @@ sdf = new SimpleDateFormat("HH:mm:ss");
                     String key = tram.getBrigade() + "_" + tram.getFirstLine();
 
                     if (markers.containsKey(key)) {
-                        markers.get(key)
-                                .getMarker()
-                                .setPosition(new LatLng(tram.getLat(), tram.getLon()));
+                        markers.get(key).update(tram);
+//                                .getMarker()
+//                                .setPosition(new LatLng(tram.getLat(), tram.getLon()));
                     } else {
                         MarkerOptions opts = new MarkerOptions()
                                 .position(new LatLng(tram.getLat(), tram.getLon()))
 
-                                .title( sdf.format(tram.getTime())
-                                        + " "
-                                        + tram.getFirstLine()
-                                        + ","
-                                        + tram.getLines());
+                                .title( MyMapMarker.getMarkerTittle(tram));
 
                         Marker marker = map.addMarker(opts);
 
