@@ -38,29 +38,29 @@ public class DataStore extends Fragment {
         gson = builder.setDateFormat("YYYY-MM-dd'T'HH:mm:ss").create();
         observers = new ArrayList<>();
         webDownloader = new WebDownloader();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 running = true;
                 while (running) {
-                    byte[] byteArray = webDownloader.downloadFileSync(UM_URL);
-                    Log.e(logTag, "Tablica: " + byteArray.length);
-                    String json = new String(byteArray);
-                    Log.e(logTag, "String: " + json.length());
-                    Log.e(logTag, "Downloaded: " + json);
-                    Log.e(logTag, "Starting JSON parser");
-                    JsonReader rdr = new JsonReader(
-                            new StringReader(json));
-                    rdr.setLenient(true);
-                    TramApiResult apiObjects = gson.fromJson(rdr, TramApiResult.class);
-
-                    for (DataStoreObserver observer : observers) {
-                        observer.onNewDataAvailable(Arrays.asList(apiObjects.result));
+                    try {
+                        byte[] byteArray = webDownloader.downloadFileSync(UM_URL);
+                        Log.e(logTag, "Tablica: " + byteArray.length);
+                        String json = new String(byteArray);
+                        Log.e(logTag, "String: " + json.length());
+                        Log.e(logTag, "Downloaded: " + json);
+                        Log.e(logTag, "Starting JSON parser");
+                        JsonReader rdr = new JsonReader(
+                                new StringReader(json));
+                        rdr.setLenient(true);
+                        TramApiResult apiObjects = gson.fromJson(rdr, TramApiResult.class);
+                        synchronized (observers) {
+                            for (DataStoreObserver observer : observers) {
+                                observer.onNewDataAvailable(Arrays.asList(apiObjects.result));
+                            }
+                        }
+                    } catch(Exception e){
+                        Log.e(logTag, e.getMessage());
                     }
                     try {
                         Thread.sleep(period);
@@ -71,6 +71,11 @@ public class DataStore extends Fragment {
                 }
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
 
@@ -100,13 +105,17 @@ public class DataStore extends Fragment {
     List<DataStoreObserver> observers;
 
     public void registerObserver(DataStoreObserver observer) {
-        if (!observers.contains(observer)) {
-            observers.add(observer);
+        synchronized (observers) {
+            if (!observers.contains(observer)) {
+                observers.add(observer);
+            }
         }
     }
 
     public void unregisterObserver(DataStoreObserver observer) {
-        observers.remove(observer);
+        synchronized (observers) {
+            observers.remove(observer);
+        }
     }
 
 
