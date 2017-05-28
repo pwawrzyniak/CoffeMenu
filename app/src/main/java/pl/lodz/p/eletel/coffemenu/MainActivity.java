@@ -19,6 +19,7 @@ public class MainActivity extends Activity {
     WebDownloader webDownloader;
     MyImageRepository imageRepository;
     MyMapFragment mapFragment;
+    private DataStore dataStore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +29,7 @@ public class MainActivity extends Activity {
         webDownloader = new WebDownloader();
         imageRepository = new MyImageRepository(this);
         mapFragment = new MyMapFragment();
-
+        dataStore = new DataStore();
 
         TabHost host = (TabHost) findViewById(R.id.tabhost);
         host.setup();
@@ -37,14 +38,17 @@ public class MainActivity extends Activity {
         createTab("Lista", R.id.tab2, host);
         createTab("Ustawienia", R.id.tab3, host);
 
-        FragmentManager fragmentManager = getFragmentManager();
+        final FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
                 .add(R.id.tab3, new MyPreferenceFragment(), FragmentTags.SETTINGS)
                 .commit();
 
         fragmentManager.beginTransaction()
                 .add(R.id.tab1, mapFragment, FragmentTags.MAP)
+                .add(dataStore, FragmentTags.DATASTORE)
                 .commit();
+
+        
 
         Button button = (Button) findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
@@ -85,6 +89,8 @@ public class MainActivity extends Activity {
                             item, 0, item.length
                     ));
 
+
+                    ((DataStore)fragmentManager.findFragmentByTag(FragmentTags.DATASTORE)).start(500);
 
                     boolean a = true;
                     a = !a;

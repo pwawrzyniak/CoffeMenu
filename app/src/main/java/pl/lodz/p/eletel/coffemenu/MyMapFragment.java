@@ -21,6 +21,8 @@ public class MyMapFragment extends MapFragment {
                 map = googleMap;
             }
         });
+
+
     }
 
 

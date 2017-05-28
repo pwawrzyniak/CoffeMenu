@@ -7,4 +7,5 @@ package pl.lodz.p.eletel.coffemenu;
 public class FragmentTags {
     public static final String MAP = "MAP";
     public static final String SETTINGS="SETTINGS";
+    public static final String DATASTORE = "DATASTORE";
 }
